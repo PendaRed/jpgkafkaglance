@@ -2,6 +2,8 @@
 
 April 2018: a very simple Kafka monitor to display topics and offsets and lags.
 
+Not a replacement for the Yahoo Kafka Monitor, more a devops util for smallish Kafka installs.
+
 #### @TODO
 - If socket already listened to log and fail fast.
 - Find someplace to hold the release tarball.
@@ -10,10 +12,9 @@ April 2018: a very simple Kafka monitor to display topics and offsets and lags.
 
 You must configure it using application.conf - as it is an Akka application.
 
--Dconfig.file=/path/to/application.conf
--Dlogback.configurationFile=/path/to/config.xml
+${java_cmd} -cp "${SCRIPTDIR}/config/:kafka-glance.jar" com.jgibbons.kglance.KafkaGlance -Dlogback.configurationFile=${SCRIPTDIR}/config/logback.xml > logs/kafka-glance.stdout 2>&1 & echo $!> ${PIDFILE}
 
-You should also set up logback, see below for an example logback.xml.
+Look in src/main/linux for some example configs and scripts
 
 ## Why?
 
@@ -36,10 +37,6 @@ Its Scala 2.12 compatible with Kafka 1.0.
 KafkaGlance is for simple at a glance monitoring.  It is not suitable for hundreds of nodes running thousands of topics.
 If you do that you have your own teams to write devops tools.
 
-## Running on linux
-
-The files to run it on linux are all in Git, under src/main/linux
-
 ## Building the assembly
 To build it use:
 sbt clean assembly
@@ -49,3 +46,7 @@ I'll upload a release tarball at some point.
 
 It will place the assembly somewhere like:
 C:\dev\jpgkafkaglance\kafkaglance\target\scala-2.12\kafka-glance.jar
+
+## Running on linux
+
+The files to run it on linux are all in Git, under src/main/linux
