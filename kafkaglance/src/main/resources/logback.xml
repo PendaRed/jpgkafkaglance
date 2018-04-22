@@ -1,0 +1,34 @@
+<!-- scan=true means reload if config changes , scan every min by default -->
+<configuration scan="true">
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target>
+        <encoder>
+            <!--pattern>%X{akkaTimestamp} %-5level %logger{36} %X{sourceThread} - %msg%n</pattern-->
+            <pattern>%X{akkaTimestamp} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="ROLLINGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>logs/kafkaglance.log</File>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %X{akkaTimestamp} %-5level %logger{36} %X{sourceThread} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>logs/loginauth.log.-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 50MB -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+
+            <!-- keep at most 10 log files -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="akka" level="debug" />
+
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="ROLLINGFILE" />
+    </root>
+</configuration>
