@@ -23,9 +23,18 @@ kafka-glance_2.12-1.0.0.tar.gz: OK
 
 ## How to run it?
 
-You must configure it using application.conf - as it is an Akka application.
+Configure it by editing the config/application.conf for your own webhost and also the kafka broker details.
+```
+./kafka-glance.sh start
+./kafka-glance.sh stop
+./kafka-glance.sh restart
+```
 
+OR you can do it all yourself from source, and then upload the start script, the heart of which is:
+
+```
 ${java_cmd} -cp "${SCRIPTDIR}/config/:kafka-glance.jar" com.jgibbons.kglance.KafkaGlance -Dlogback.configurationFile=${SCRIPTDIR}/config/logback.xml > logs/kafka-glance.stdout 2>&1 & echo $!> ${PIDFILE}
+```
 
 Look in src/main/linux for some example configs and scripts
 
