@@ -1,4 +1,4 @@
-<img src="http:
+<img src="https://pendared/github.io/jpgkafkaglance/images/kglance.png">
 
 April 2018: a very simple Kafka monitor to display topics and offsets and lags.
 
