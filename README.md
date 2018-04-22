@@ -8,6 +8,18 @@ Not a replacement for the Yahoo Kafka Monitor, more a devops util for smallish K
 - If socket already listened to log and fail fast.
 - Find someplace to hold the release tarball.
 
+## Download the release
+
+<a ref="https://pendared.github.io/jpgkafkaglance/releases/kafka-glance_2.12-1.0.0.tar.gz">kafka-glance_2.12-1.0.0.tar.gz</a>
+<a ref="https://pendared.github.io/jpgkafkaglance/releases/kafka-glance_2.12-1.0.0.tar.gz.md5">kafka-glance_2.12-1.0.0.tar.gz.md5</a>
+
+### Validate the release
+
+```
+md5sum -c kafka-glance_2.12-1.0.0.tar.gz.md5
+kafka-glance_2.12-1.0.0.tar.gz: OK
+```
+
 ## How to run it?
 
 You must configure it using application.conf - as it is an Akka application.
@@ -45,6 +57,17 @@ I'll upload a release tarball at some point.
 It will place the assembly somewhere like:
 C:\dev\jpgkafkaglance\kafkaglance\target\scala-2.12\kafka-glance.jar
 
+## Creating the tarball
+
+Upload to your linux server, into a versioned dir such as kafka-glance_2.12-1.0.0
+
+```
+tar -cvf kafka-glance_2.12-1.0.0.tar kafka-glance_2.12-1.0.0
+gzip kafka-glance_2.12-1.0.0.tar
+
+md5sum kafka-glance_2.12-1.0.0.tar.gz > kafka-glance_2.12-1.0.0.tar.gz.md5
+```
+
 ## Running on linux
 
-The files to run it on linux are all in Git, under src/main/linux
+The files to run it on linux are all in Git, under src/main/linux, or download the release above.
