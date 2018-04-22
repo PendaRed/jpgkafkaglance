@@ -6,7 +6,6 @@ Not a replacement for the Yahoo Kafka Monitor, more a devops util for smallish K
 
 #### @TODO
 - If socket already listened to log and fail fast.
-- Find someplace to hold the release tarball.
 
 ## Download the release
 
