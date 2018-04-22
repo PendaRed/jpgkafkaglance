@@ -24,9 +24,7 @@ While monitoring services it is great to see at-a-glance which topics are active
 
 ie:
 
-| Topic Name | Consumer Group | Num Consumers | Lag | Offset | End Pos |
-|------------|----------------|---------------|-----|--------|---------|
-| ATopic     | MyConsumer1    |             3 |    2|    200 |     202 |
+<img src="https://pendared.github.io/jpgkafkaglance/images/kglance_topics_v1.0.0.png">
 
 ## Versions?
 
