@@ -57,12 +57,14 @@ Its Scala 2.12 compatible with Kafka 1.0.
 KafkaGlance is for simple at a glance monitoring.  It is not suitable for hundreds of nodes running thousands of topics.
 If you do that you have your own teams to write devops tools.
 
+#Building it yourself
+No need for this, download the tar.gz above, but if you want to, then ...
+
 ## Building the assembly
 To build it use:
 sbt clean assembly
 
 Then scp the jar up, along with the files in the linux dir and it will run.
-I'll upload a release tarball at some point.
 
 It will place the assembly somewhere like:
 C:\dev\jpgkafkaglance\kafkaglance\target\scala-2.12\kafka-glance.jar
