@@ -10,6 +10,7 @@ object Dependencies {
   val KafkaVersion 			= "1.0.0"
   val TypesafeConfigVersion = "1.3.1"
   val LogbackVersion = "1.2.3"
+  val Log4jBridgeVersion = "1.7.25"
   // seems to have a dependency on 2.4.19, so not using Akka 2.5.4 yet.
   val AkkaHttpVersion = "10.1.0"
 
@@ -39,7 +40,8 @@ object Dependencies {
   val commonSettingsDependencies = Seq(
     "org.scalamock" %% "scalamock" % ScalaMockVersion % Test,
     "org.scalatest" %% "scalatest" % ScalaTestVersion % Test,
-    "ch.qos.logback" % "logback-classic" % LogbackVersion
+    "ch.qos.logback" % "logback-classic" % LogbackVersion,
+    "org.slf4j" % "log4j-over-slf4j" % Log4jBridgeVersion
   )
 
   val jpgcommonDependencies = config
