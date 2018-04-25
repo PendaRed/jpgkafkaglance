@@ -1,7 +1,12 @@
 To customise the install for yourself, edit the passwords and hostnames...
 
 cd config
-sed -i 's/AdminGlance/yourpasswd' application.conf; sed -i "s/kafkaglance.webserver.hostName=.*/kafkaglance.webserver.hostName=${HOSTNAME}/" application.conf
+sed -i 's/AdminGlance/yourpasswd' application.conf; sed -i "s/kafkaglance.webserver.hostName=.*/kaf
+kaglance.webserver.hostName=${HOSTNAME}/" application.conf
+
+# If you want to you can edit the envName, if you do then keep it short as its the
+# page title as well. eg.
+kafkaglance.webserver.envName="Dev Kafka Glance"
 
 # Now you have to change the broker details to be your brokers, ie edit application.conf
 # on the line which looks like:
@@ -14,5 +19,3 @@ cd ..
 #Now browse to $HOSTNAME:9001/
 
 ./kafka-glance.sh stop
-
-
