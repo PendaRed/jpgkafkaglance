@@ -75,7 +75,6 @@ class ApiGateway extends GlanceJsonSupport {
     .handle {
       case MissingCookieRejection(cookieName) =>
         log.info("rejected missing cookie")
-        //        complete(HttpResponse(BadRequest, entity = "No cookies, no service!!!"))
         // according to wiki, using see other is the correct mechanism and is pary of the
         // Post/Redirect/Get pattern
         redirect(Uri("http://" + config.hostname + ":" + config.portNum + "/login.html"), StatusCodes.SeeOther)
@@ -130,7 +129,6 @@ class ApiGateway extends GlanceJsonSupport {
   }
 
   def myUserPassAuthenticator(credentials:Credentials):Option[String] = {
-    println(credentials)
     credentials match {
       case p@Credentials.Provided(id) if p.verify(adminPassword) && id == adminUsername =>
         Some(id)
@@ -185,11 +183,6 @@ class ApiGateway extends GlanceJsonSupport {
                 extractUnmatchedPath { f => logAndGetFile("images/", f.toString()) }
               } ~  path("kafkaglance.html" | "kgdata.html" | "kghome.html") {
                 validateCookieAndRouteToMainPage(clientIpAddr, hostPort, pageRequested)
-//              } ~  path("kgdata.html") {
-//                validateCookieAndRouteToMainPage(clientIpAddr, hostPort, "kgdata.html")
-//              } ~  path("kghome.html") {
-//                validateCookieAndRouteToMainPage(clientIpAddr, hostPort, "kghome.html")
-//
               } ~ rejectEmptyResponse {
                 log.debug("Redirecting to login.html, and removing any session cookie")
                 deleteCookie(ApiGateway.COOKIE_SESSION_ID) {
@@ -201,21 +194,9 @@ class ApiGateway extends GlanceJsonSupport {
         } ~ post {
           extractRequest {
             request =>
-              //            println(request.headers)
-//            println("POST " + request.uri)
             val hostPort = request.uri.authority
             log.debug("POST "+ request.uri+ "  from "+ clientIpAddr+ ", headers:"+request.headers)
-
-            request.entity.dataBytes.map(_.utf8String).runForeach(data => println("XX" + data + "YY"))
-
             path("auth.html") {
-              //              formFieldMap { fields =>
-              //                def formFieldString(formField:(String, String)):String =
-              //                  s"""${formField._1} = '${formField._2}'"""
-              //
-              //                complete(s"The form fields are ${fields.map(formFieldString(_)).mkString(", ")}")
-              //              }
-              //              formFields('username, 'password) { (userName, password) => {
               formFields('auth) { (auth) => {
                 val str = auth.toString
                 val authBase64 = SillyCypher.decode(str)
@@ -226,15 +207,11 @@ class ApiGateway extends GlanceJsonSupport {
                   onSuccess(usefulActors.userSessionCache ? RegisterUserInMsg(adminUsername,clientIpAddr.toString())) {
                     case UserSessionIdOutMsg(cookieValue) =>
                       val loginInfo = GlanceLoginInfo("OK", cookieValue)
-                      val json = loginInfo.toJson
-                      println(json)
                       complete(loginInfo) // implicits in GlanceJsonSupport muster this up
                   }
                 } else {
                   log.debug("Login invalid")
                   val loginInfo = GlanceLoginInfo("no", "foobar")
-                  val json = loginInfo.toJson
-                  println(json)
                   complete(loginInfo) // implicits in GlanceJsonSupport muster this up
                 }
               }
@@ -267,8 +244,6 @@ class ApiGateway extends GlanceJsonSupport {
       case LatestTopicInfoOutMsg(payload:Option[List[GlanceTopicInfo]]) =>
         payload match {
           case Some(topicInfo) =>
-//            val json = topicInfo.toJson
-//            println(json)
             complete(GlanceNamedList("topics", "", topicInfo)) // the GlanceJsonSupport trait has implicits t convert the data to JSon
           case None => complete(GlanceNamedList("topics", "No topic information available, perhaps Kafka is down?", List.empty[GlanceTopicInfo]))
         }
@@ -283,8 +258,6 @@ class ApiGateway extends GlanceJsonSupport {
       case KafkaInfoOutMsg(payload:Option[Map[String, String]]) =>
         payload match {
           case Some(kafkaInfoMap) =>
-//            val json = GlanceNamedMap("info", "", kafkaInfoMap).toJson
-//            println(json)
             complete(GlanceNamedMap("info", "", kafkaInfoMap))
           case None => complete(GlanceNamedMap("info", "No information available, perhaps Kafka is down?", Map.empty[String, String]))
         }

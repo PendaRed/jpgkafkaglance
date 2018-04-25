@@ -77,7 +77,7 @@ function loginNow() {
       if (this.readyState == 4) {
         if (this.status == 200) {
             var response = JSON.parse(xhttp.responseText);
-            console.log(response);
+//            console.log(response);
             if (response.isOk == "OK") {
                 // server side class is GlanceLoginInfo
                 var cookieVal = response.cookieVal
