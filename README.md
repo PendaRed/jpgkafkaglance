@@ -19,17 +19,17 @@ Not a replacement for the Yahoo Kafka Monitor, more a devops util for smallish K
   </tr><tr>
     <td>Kafka 1.0</td>
     <td>April 2018</td>
-    <td>1.0.2</td>
-    <td><a href="https://pendared.github.io/jpgkafkaglance/releases/kafka-glance_2.12-1.0.2.tar.gz">kafka-glance_2.12-1.0.2.tar.gz</a></td>
-    <td><a href="https://pendared.github.io/jpgkafkaglance/releases/kafka-glance_2.12-1.0.2.tar.gz.md5">kafka-glance_2.12-1.0.2.tar.gz.md5</a></td>
+    <td>1.0.3</td>
+    <td><a href="https://pendared.github.io/jpgkafkaglance/releases/kafka-glance_2.12-1.0.3.tar.gz">kafka-glance_2.12-1.0.3.tar.gz</a></td>
+    <td><a href="https://pendared.github.io/jpgkafkaglance/releases/kafka-glance_2.12-1.0.3.tar.gz.md5">kafka-glance_2.12-1.0.3.tar.gz.md5</a></td>
   </tr>
 </table>
 
 ### Validate the release
 
 ```
-md5sum -c kafka-glance_2.12-1.0.2.tar.gz.md5
-kafka-glance_2.12-1.0.2.tar.gz: OK
+md5sum -c kafka-glance_2.12-1.0.3.tar.gz.md5
+kafka-glance_2.12-1.0.3.tar.gz: OK
 ```
 
 ## How to run it?
@@ -87,10 +87,10 @@ C:\dev\jpgkafkaglance\kafkaglance\target\scala-2.12\kafka-glance.jar
 Upload to your linux server, into a versioned dir such as kafka-glance_2.12-1.0.0
 
 ```
-tar -cvf kafka-glance_2.12-1.0.2.tar kafka-glance_2.12-1.0.2
-gzip kafka-glance_2.12-1.0.2.tar
+tar -cvf kafka-glance_2.12-1.0.3.tar kafka-glance_2.12-1.0.3
+gzip kafka-glance_2.12-1.0.3.tar
 
-md5sum kafka-glance_2.12-1.0.2.tar.gz > kafka-glance_2.12-1.0.2.tar.gz.md5
+md5sum kafka-glance_2.12-1.0.3.tar.gz > kafka-glance_2.12-1.0.3.tar.gz.md5
 ```
 
 ## Running on linux
