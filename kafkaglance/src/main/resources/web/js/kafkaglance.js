@@ -31,9 +31,15 @@ function displayTopicData(topicDataArray) {
         var lag = topicDataArray[x].endOffset - topicDataArray[x].commitedOffset;
         txt += "<tr><td>" + topicDataArray[x].topicName + "</td>";
         txt += "<td>" + topicDataArray[x].consumerName + "</td>";
-        txt += "<td class='num'>" + topicDataArray[x].numConsumers + "</td>";
-        txt += "<td class='num'>" + lag + "</td>";
-        txt += "<td class='num'>" + topicDataArray[x].commitedOffset + "</td>";
+        if (topicDataArray[x].consumerName.length>0) {
+            txt += "<td class='num'>" + topicDataArray[x].numConsumers + "</td>";
+            txt += "<td class='num'>" + lag + "</td>";
+            txt += "<td class='num'>" + topicDataArray[x].commitedOffset + "</td>";
+        } else {
+            txt += "<td class='num'></td>";
+            txt += "<td class='num'></td>";
+            txt += "<td class='num'></td>";
+        }
         txt += "<td class='num'>" + topicDataArray[x].endOffset + "</td>";
         txt += "</tr>";
         lastDateTime = topicDataArray[x].dateStr
