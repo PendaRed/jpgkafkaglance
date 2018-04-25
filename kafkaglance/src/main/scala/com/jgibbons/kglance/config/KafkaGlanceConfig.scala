@@ -16,6 +16,7 @@ import scala.util.matching.Regex
 case class KafkaGlanceConfig(config: Config) {
   private val logger = LoggerFactory.getLogger(this.getClass.getName)
 
+  val envName:String = config.getString("kafkaglance.webserver.envName")
   val hostname:String = config.getString("kafkaglance.webserver.hostName")
   val portNum:Int = config.getInt("kafkaglance.webserver.portNumber")
 

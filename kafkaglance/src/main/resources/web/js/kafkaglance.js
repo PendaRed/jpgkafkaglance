@@ -24,7 +24,7 @@ function displayMessage(msg) {
     document.getElementById("displayMessage").innerHTML = "<div style='text-align: center;'>"+msg+"</div>";
 }
 
-function displayTopicData(topicDataArray) {
+function displayTopicData(envName, topicDataArray) {
     var lastDateTime = ""
     var txt = "<table id='topics'><tr><th>Topic</th><th>GroupId</th><th class='num'>Consumers</th><th class='num'>Lag</th><th class='num'>Committed</th><th class='num'>End Offset</th></tr>"
     for (x in topicDataArray) {
@@ -45,8 +45,9 @@ function displayTopicData(topicDataArray) {
         lastDateTime = topicDataArray[x].dateStr
     }
     txt += "</table>"
-    displayMessage("Last refreshed: "+lastDateTime)
+    displayMessage(envName+" : Last refreshed: "+lastDateTime)
     document.getElementById("topicData").innerHTML = txt;
+    document.title = envName
 }
 
 function displayHomeData(responseMap) {
@@ -67,7 +68,7 @@ function displayHomeData(responseMap) {
 function displayData(response) {
     if (response.name=="topics") {
         if (response.data.length>0) {
-            displayTopicData(response.data)
+            displayTopicData(response.envName, response.data)
         } else {
             document.getElementById("topicData").innerHTML = "";
             displayMessage(response.forceLogin)

@@ -17,6 +17,6 @@ case class GlanceTopicInfo(topicName:String,
   * @param forceLogin If "Y" then kglance.js will relocate to the login page
   * @param data If forceLogin != "Y" then holds the topic data
   */
-case class GlanceNamedList(name:String, forceLogin:String, data:List[GlanceTopicInfo])
+case class GlanceNamedList(name:String, forceLogin:String, envName:String, data:List[GlanceTopicInfo])
 
 case class GlanceNamedMap(name:String,  forceLogin:String, data:Map[String, String])

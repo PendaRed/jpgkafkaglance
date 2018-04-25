@@ -4,11 +4,12 @@ import java.io.{File, PrintWriter, StringWriter}
 
 import akka.actor.ActorSystem
 import akka.event.{LogSource, Logging}
+import akka.http.javadsl.model.headers.CacheControl
 import akka.http.javadsl.server.Route
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.headers.{HttpCookie, HttpCookiePair}
+import akka.http.scaladsl.model.headers.{HttpCookie, HttpCookiePair, RawHeader}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.RouteResult.Complete
 import akka.http.scaladsl.server.directives.Credentials
@@ -62,6 +63,7 @@ class ApiGateway extends GlanceJsonSupport {
   }
   val log = Logging(system, this)
   val config = KafkaGlanceConfig(ConfigFactory.load())
+  val envNameForWebpage = config.envName
 
   config.dumpConfig("")
 
@@ -174,7 +176,8 @@ class ApiGateway extends GlanceJsonSupport {
                   }
                 }
               } ~pathPrefix("favicon.ico") {
-                complete((NotFound, s"Not found"))
+                logAndGetFile("images/", "favicon.png")
+                //                complete((NotFound, s"Not found"))
               } ~pathPrefix("css") {
                 extractUnmatchedPath { f => logAndGetFile("css/", f.toString()) }
               } ~ pathPrefix("js") {
@@ -244,8 +247,10 @@ class ApiGateway extends GlanceJsonSupport {
       case LatestTopicInfoOutMsg(payload:Option[List[GlanceTopicInfo]]) =>
         payload match {
           case Some(topicInfo) =>
-            complete(GlanceNamedList("topics", "", topicInfo)) // the GlanceJsonSupport trait has implicits t convert the data to JSon
-          case None => complete(GlanceNamedList("topics", "No topic information available, perhaps Kafka is down?", List.empty[GlanceTopicInfo]))
+            respondWithHeaders(RawHeader("Cache-Control", "no-cache")) {
+              complete(GlanceNamedList("topics", "", envNameForWebpage, topicInfo)) // the GlanceJsonSupport trait has implicits t convert the data to JSon
+            }
+          case None => complete(GlanceNamedList("topics", envNameForWebpage+ " No topic information available, perhaps Kafka is down?", envNameForWebpage, List.empty[GlanceTopicInfo]))
         }
     } // @TODO what about failure, timeout etc
   }
@@ -258,14 +263,17 @@ class ApiGateway extends GlanceJsonSupport {
       case KafkaInfoOutMsg(payload:Option[Map[String, String]]) =>
         payload match {
           case Some(kafkaInfoMap) =>
-            complete(GlanceNamedMap("info", "", kafkaInfoMap))
+            val withEnvName = Map("Environment"->envNameForWebpage)++kafkaInfoMap
+            respondWithHeaders(RawHeader("Cache-Control", "no-cache")) {
+              complete(GlanceNamedMap("info", "", withEnvName))
+            }
           case None => complete(GlanceNamedMap("info", "No information available, perhaps Kafka is down?", Map.empty[String, String]))
         }
     } // @TODO what about failure, timeout etc
   }
 
   def makePageRedirectToLogin() = {
-    complete(GlanceNamedList("topics", "Y", List.empty[GlanceTopicInfo]))
+    complete(GlanceNamedList("topics", "Y", "", List.empty[GlanceTopicInfo]))
   }
 
   def sendHttpRedirect(sessionId:String,hostPort:String, cookieVal:String, logReason:String) = {

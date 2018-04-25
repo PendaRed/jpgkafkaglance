@@ -11,7 +11,7 @@ import spray.json._
   */
 trait GlanceJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val topicInfoFormat = jsonFormat6(GlanceTopicInfo)
-  implicit val listTopicInfoFormat = jsonFormat3(GlanceNamedList)
+  implicit val listTopicInfoFormat = jsonFormat4(GlanceNamedList)
   implicit val mapKafkaInfoFormat = jsonFormat3(GlanceNamedMap)
 
   implicit val glanceLoginInfoFormat = jsonFormat2(GlanceLoginInfo)
