@@ -1,0 +1,18 @@
+To customise the install for yourself, edit the passwords and hostnames...
+
+cd config
+sed -i 's/AdminGlance/yourpasswd' application.conf; sed -i "s/kafkaglance.webserver.hostName=.*/kafkaglance.webserver.hostName=${HOSTNAME}/" application.conf
+
+# Now you have to change the broker details to be your brokers, ie edit application.conf
+# on the line which looks like:
+  bootstrap.servers="192.168.1.253:9092,192.168.1.254:9092"
+
+Once you have done that
+cd ..
+./kafka-glance.sh start
+
+#Now browse to $HOSTNAME:9001/
+
+./kafka-glance.sh stop
+
+
