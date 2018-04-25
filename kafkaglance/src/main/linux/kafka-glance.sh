@@ -35,7 +35,8 @@ start() {
   echo "Starting kafka-glance (PID written to $PIDFILE)."
   java_cmd=$(get_java_cmd)
 
-  nohup ${java_cmd} -cp "${SCRIPTDIR}/config/:kafka-glance.jar" com.jgibbons.kglance.KafkaGlance -Dlogback.configurationFile=${SCRIPTDIR}/config/logback.xml > logs/kafka-glance.stdout 2>&1 & echo $!> ${PIDFILE}
+  cd ${SCRIPTDIR}
+  nohup ${java_cmd} -cp "${SCRIPTDIR}/config/:${SCRIPTDIR}/kafka-glance.jar" com.jgibbons.kglance.KafkaGlance -Dlogback.configurationFile=${SCRIPTDIR}/config/logback.xml > ${SCRIPTDIR}/logs/kafka-glance.stdout 2>&1 & echo $!> ${PIDFILE}
 }
 
 stop() {
