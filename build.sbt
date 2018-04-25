@@ -3,7 +3,7 @@ import sbt.Keys.{name, _}
 // Multi project build file.  For val xxx = project, xxx is the name of the project and base dir
 lazy val commonSettings = Seq(
 	organization := "com.jgibbons",
-	version := "1.0.2",
+	version := "1.0.3",
 	scalaVersion := "2.12.4",
 	test in assembly := {},
 	assemblyMergeStrategy in assembly := {
