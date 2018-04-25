@@ -50,12 +50,12 @@ function displayTopicData(topicDataArray) {
 }
 
 function displayHomeData(responseMap) {
-    var txt = "<div class='glancehome'><img src='images/kglance.png'></br>";
+    var txt = "<div class='infoDiv'><img src='images/kglance.png'></br>";
     txt += "<table id='topics'>"
     for (var key in responseMap) {
         if (responseMap.hasOwnProperty(key)) {
           var value = responseMap[key];
-          txt += "<tr><td>"+key+"</td><td>"+value+"</td></tr>";
+          txt += "<tr><td>"+key+"</td><td class='break'>"+value+"</td></tr>";
         }
     }
     txt += "</table>";

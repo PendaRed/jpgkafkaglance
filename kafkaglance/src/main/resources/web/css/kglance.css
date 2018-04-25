@@ -32,6 +32,11 @@ img {
     margin-right: auto;
 }
 
+.infoDiv {
+    max-width: 80%;
+    margin: auto;
+}
+
 #topics {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     font-variant-numeric: lining-nums tabular-nums;
@@ -40,6 +45,11 @@ img {
     margin-right:auto;
 }
 
+#topics td.break, #topics th.break {
+    border: 1px solid #ddd;
+    padding: 8px;
+    word-break: break-all;
+}
 #topics td, #topics th {
     border: 1px solid #ddd;
     padding: 8px;
