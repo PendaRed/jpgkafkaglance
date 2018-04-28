@@ -19,6 +19,7 @@ var cookie = getCookie("kgSessionId")
 console.log("onload kgSessionId="+cookie)
 var requestInProgress=true;
 var requestStartTime = new Date();
+var timeoutId = 0;
 
 function displayMessage(msg) {
     document.getElementById("displayMessage").innerHTML = "<div style='text-align: center;'>"+msg+"</div>";
@@ -66,6 +67,11 @@ function displayHomeData(responseMap) {
 }
 
 function displayData(response) {
+    requestInProgress=false
+    if (timeoutId >0) {
+        clearInterval(timeoutId);
+        timeoutId=0;
+    }
     if (response.name=="topics") {
         if (response.data.length>0) {
             displayTopicData(response.envName, response.data)
@@ -77,13 +83,23 @@ function displayData(response) {
     } else if (response.name=="info") {
        displayHomeData(response.data)
     }
-    requestInProgress=false
+}
+
+function showRequestProgress() {
+    if (!requestInProgress) return
+
+    var now = new Date();
+    var elapsed = now.getTime()-requestStartTime.getTime();
+    if (elapsed>3) {
+        var secs = (elapsed/1000).toFixed(0);
+        displayMessage(document.title+" : Waiting "+secs+" seconds for server.")
+    }
 }
 
 function requestMadeNoReplyYet() {
     if (requestInProgress) {
         var now = new Date();
-        var elapsed = now-requestStartTime;
+        var elapsed = now.getTime()-requestStartTime.getTime();
         if (elapsed<10000) {
             console.log("New request ignored as request in progress")
             return true;
@@ -97,6 +113,9 @@ function refreshData(pagename) {
 
     requestStartTime = new Date();
     requestInProgress = true;
+    if (timeoutId==0) {
+        timeoutId = setInterval(showRequestProgress, 1000)
+    }
 
     var cookie = getCookie("kgSessionId");
     console.log("kgSessionId="+cookie);

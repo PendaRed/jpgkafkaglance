@@ -19,7 +19,7 @@ import com.jgibbons.kglance.KafkaGlanceGuardianActor.GuardianInitialiseInMsg
 import com.jgibbons.kglance.KafkaGlanceGuardianActor
 import com.jgibbons.kglance.config.KafkaGlanceConfig
 import com.typesafe.config.ConfigFactory
-import akka.pattern.ask
+import akka.pattern.{AskTimeoutException, ask}
 import akka.util.{ByteString, Timeout}
 import com.jgibbons.kglance.kafkaadmin._
 import com.jgibbons.kglance.kafkaadmin.KafkaInfoActor.{GetKafkaInfoInMsg, GetLatestStatsInMsg, KafkaInfoOutMsg, LatestTopicInfoOutMsg}
@@ -51,7 +51,7 @@ class ApiGateway extends GlanceJsonSupport {
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
   // Implicit timeout for the ask
-  implicit val timeout = Timeout(10 seconds)
+  implicit val timeout = Timeout(20 seconds)
 
   val myGuardian = system.actorOf(KafkaGlanceGuardianActor.props(), name = "KafkaGlanceGuardianActor")
   val usefulActors: UsefulActors = boostrapUsefulActorsFromTheGuardian
@@ -91,12 +91,17 @@ class ApiGateway extends GlanceJsonSupport {
     */
   implicit def myExceptionHandler =
     ExceptionHandler {
+      case e: AskTimeoutException =>
+        extractUri { uri =>
+          log.error(e, s"Internal ask timeout error serving URL $uri")
+          complete(GlanceNamedList("topics", envNameForWebpage + " Internal timeout, perhaps you have too many topics for Glance to handle?", envNameForWebpage, List.empty[GlanceTopicInfo]))
+        }
       case e: Exception =>
         extractUri { uri =>
           val sw = new StringWriter()
           e.printStackTrace(new PrintWriter(sw))
           val stackTrace = sw.toString
-          log.error(s"Internal Server Error serving URL $uri", e)
+          log.error(e, s"Internal Server Error serving URL $uri")
 
           val ent = HttpEntity(ContentTypes.`text/html(UTF-8)`,
             s"""
@@ -224,9 +229,16 @@ class ApiGateway extends GlanceJsonSupport {
         }
       }
     }
-  log.info("Starting Akka.Http")
+  log.info(s"Starting Akka.Http, with host and port: ${config.hostname}:${config.portNum}")
   val bindingFuture = Http().bindAndHandle(route, config.hostname, config.portNum)
 
+  bindingFuture.failed.foreach { ex =>
+    log.error(ex,
+      """Exception opening server socket, closing down.
+        | Perhaps another instance is running already?
+        | Or edit the config and change the port number so I am not blocked by another service.""".stripMargin)
+    closeDown()
+  }
 
   def logAndGetFile(dir:String, filename: String) = {
     logAndGetFromFile(dir+ {
@@ -244,15 +256,15 @@ class ApiGateway extends GlanceJsonSupport {
     */
   def completeWithKafkaData() = {
     onSuccess(usefulActors.kafkaUtilsActor ? GetLatestStatsInMsg) {
-      case LatestTopicInfoOutMsg(payload:Option[List[GlanceTopicInfo]]) =>
+      case LatestTopicInfoOutMsg(payload: Option[List[GlanceTopicInfo]]) =>
         payload match {
           case Some(topicInfo) =>
             respondWithHeaders(RawHeader("Cache-Control", "no-cache")) {
               complete(GlanceNamedList("topics", "", envNameForWebpage, topicInfo)) // the GlanceJsonSupport trait has implicits t convert the data to JSon
             }
-          case None => complete(GlanceNamedList("topics", envNameForWebpage+ " No topic information available, perhaps Kafka is down?", envNameForWebpage, List.empty[GlanceTopicInfo]))
+          case None => complete(GlanceNamedList("topics", envNameForWebpage + " No topic information available, perhaps Kafka is down?", envNameForWebpage, List.empty[GlanceTopicInfo]))
         }
-    } // @TODO what about failure, timeout etc
+    }
   }
 
   /**
@@ -269,7 +281,7 @@ class ApiGateway extends GlanceJsonSupport {
             }
           case None => complete(GlanceNamedMap("info", "No information available, perhaps Kafka is down?", Map.empty[String, String]))
         }
-    } // @TODO what about failure, timeout etc
+    }
   }
 
   def makePageRedirectToLogin() = {
@@ -315,4 +327,5 @@ class ApiGateway extends GlanceJsonSupport {
     }
   }
 
+  def closeDown() = system.terminate()
 }
