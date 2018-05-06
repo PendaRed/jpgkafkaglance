@@ -6,19 +6,16 @@ Not a replacement for the Yahoo Kafka Monitor, more a devops util for smallish K
 
 ## Download the release
 
+The releases are available <a href="https://github.com/PendaRed/jpgkafkaglance/releases">in the releases page</a>
 <table>
   <tr>
     <th>Compatibility</th>
     <th>Date</th>
     <th>Version</th>
-    <th>Link</th>
-    <th>Md5 checsum</th>
   </tr><tr>
     <td>Kafka 1.0</td>
     <td>April 2018</td>
     <td>1.0.4</td>
-    <td><a href="https://github.com/PendaRed/jpgkafkaglance/releases/download/v1.0.4/kafka-glance_2.12-1.0.4.tar.gz">kafka-glance_2.12-1.0.4.tar.gz</a></td>
-    <td><a href="https://github.com/PendaRed/jpgkafkaglance/releases/download/v1.0.4/kafka-glance_2.12-1.0.4.tar.gz.md5">kafka-glance_2.12-1.0.4.tar.gz.md5</a></td>
   </tr>
 </table>
 
