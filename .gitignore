@@ -1,5 +1,6 @@
 /target
 /project/target
+/releases_staging_area
 /.idea
 /logs/
 */target
