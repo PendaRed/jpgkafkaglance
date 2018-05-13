@@ -150,7 +150,7 @@ class KafkaTopicUtilsImpl(kafkaProperties: Properties, monitorTopics:Set[Regex],
     * @param nowStr A string indicating the date
     * @return A Map of Topic Name to ConsumerGroup to GlanceTopicInfo
     */
-  private def matchConsumerToTopicData(topics:List[String],
+  private[kafkaadmin] def matchConsumerToTopicData(topics:List[String],
                                        tpToEndOffset : mutable.Map[TopicPartition, Long],
                                        topicToConsumerToPartitionToOffset : mutable.Map[String, mutable.Map[String, mutable.Map[TopicPartition, Long]]],
                                        groupIdToConsumerCount : Map[String, Int],
@@ -160,40 +160,47 @@ class KafkaTopicUtilsImpl(kafkaProperties: Properties, monitorTopics:Set[Regex],
     // Topic, Consumer, GlanceTopicInfo
     val retTopicInfo = mutable.Map.empty[String, mutable.Map[String,GlanceTopicInfo]]
 
+    def addConsumerToPartitionOffset(topicName:String, consumerToPartitionToOffset:mutable.Map[String, mutable.Map[TopicPartition, Long]]) = {
+      consumerToPartitionToOffset.keySet.foreach(groupId => {
+        consumerToPartitionToOffset.get(groupId) match {
+          case Some(partitionToOffset) =>
+            partitionToOffset.keySet.foreach(tp => {
+              val committed = partitionToOffset(tp)
+              // topicName, groupId, tp,
+              val consumerMap = retTopicInfo.getOrElseUpdate(topicName, mutable.Map.empty[String,GlanceTopicInfo])
+              val glanceInfo = consumerMap.getOrElseUpdate(groupId,
+                GlanceTopicInfo(topicName, groupId,
+                  numConsumers = groupIdToConsumerCount.getOrElse(groupId,0 ),
+                  dateStr = nowStr))
+
+              tpToEndOffset.get(tp).filter(_>glanceInfo.endOffset).foreach(glanceInfo.endOffset = _)
+              partitionToOffset.get(tp).filter(_>glanceInfo.commitedOffset).foreach(glanceInfo.commitedOffset = _)
+            })
+          case None =>
+        }
+      })
+    }
+    def addTopicWithNoConsumers(topicName:String) = {
+      // Topic with no consumers.
+      retTopicInfo(topicName) = mutable.Map.empty[String,GlanceTopicInfo]
+      val glanceInfo = GlanceTopicInfo(topicName, NO_CONSUMERS_GROUP_ID, dateStr = nowStr)
+      retTopicInfo(topicName)(NO_CONSUMERS_GROUP_ID) = glanceInfo
+
+      tpToEndOffset.keySet.filter(tp=>tp.topic()==topicName).foreach(tp => {
+        tpToEndOffset.get(tp).filter(_>glanceInfo.endOffset).foreach(glanceInfo.endOffset = _)
+      })
+    }
+
     topics.foreach(topicName =>
       topicToConsumerToPartitionToOffset.get(topicName) match {
         case Some(consumerToPartitionToOffset) =>
-          consumerToPartitionToOffset.keySet.foreach(groupId => {
-            consumerToPartitionToOffset.get(groupId) match {
-              case Some(partitionToOffset) =>
-                partitionToOffset.keySet.foreach(tp => {
-                  val committed = partitionToOffset(tp)
-                  // topicName, groupId, tp,
-                  val consumerMap = retTopicInfo.getOrElseUpdate(topicName, mutable.Map.empty[String,GlanceTopicInfo])
-                  val glanceInfo = consumerMap.getOrElseUpdate(groupId,
-                    GlanceTopicInfo(topicName, groupId,
-                      numConsumers = groupIdToConsumerCount.getOrElse(groupId,0 ),
-                      dateStr = nowStr))
-
-                  tpToEndOffset.get(tp).filter(_>glanceInfo.endOffset).foreach(glanceInfo.endOffset = _)
-                  partitionToOffset.get(tp).filter(_>glanceInfo.commitedOffset).foreach(glanceInfo.commitedOffset = _)
-                })
-              case None =>
-            }
-          })
+          addConsumerToPartitionOffset(topicName, consumerToPartitionToOffset)
         case None =>
-          // Topic with no consumers.
-          retTopicInfo(topicName) = mutable.Map.empty[String,GlanceTopicInfo]
-          val glanceInfo = GlanceTopicInfo(topicName, NO_CONSUMERS_GROUP_ID, dateStr = nowStr)
-          retTopicInfo(topicName)(NO_CONSUMERS_GROUP_ID) = glanceInfo
-
-
-          tpToEndOffset.keySet.filter(tp=>tp.topic()==topicName).foreach(tp => {
-            tpToEndOffset.get(tp).filter(_>glanceInfo.endOffset).foreach(glanceInfo.endOffset = _)
-          })
+          addTopicWithNoConsumers(topicName)
       }
     )
     retTopicInfo
+
   }
 
   /**
