@@ -64,6 +64,18 @@ Its Scala 2.12 compatible with Kafka 1.0.
 KafkaGlance is for simple at a glance monitoring.  It is not suitable for hundreds of nodes running thousands of topics.
 If you do that you have your own teams to write devops tools.
 
+## FAQ
+
+#### Why doesn't my consumer appear?
+
+Consumers who have not commited will not appear.  If the commit offset is 0 then that is probably the reason.
+
+#### It isn't refreshing
+
+Some companies will have locked down your javascript.  If you are in IE try hitting F12 and then use it. That may fix it.
+
+So far Chrome and Firefox have not had these issues.
+
 #Building it yourself
 No need for this, download the tar.gz above, but if you want to, then ...
 
