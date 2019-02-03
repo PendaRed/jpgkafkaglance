@@ -1,5 +1,9 @@
 <img src="https://pendared.github.io/jpgkafkaglance/images/kglance.png">
 
+Feb 2019: Updates to Kafka Manager and Kafka Tool and Kafka itself means this little project is irrelevant.  It was fun though.
+
+---Snip---
+
 April 2018: a very simple Kafka monitor to display topics and offsets and lags.
 
 Not a replacement for the Yahoo Kafka Monitor, more a devops util for smallish Kafka installs.
